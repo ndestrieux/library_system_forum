@@ -1,0 +1,35 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+
+-   repo: https://github.com/PyCQA/autoflake
+    rev: v2.1.1
+    hooks:
+    -   id: autoflake
+        name: autoflake
+        entry: autoflake
+        language: python
+        types: [python]
+        require_serial: true
+        args: ['--in-place', '--remove-all-unused-imports']
+
+-   repo: local
+    hooks:
+    -   id: isort
+        name: isort
+        entry: isort
+        language: python
+        types: [ file, python ]
+        args: ["--profile", "black", "--filter-files"]
+
+-   repo: local
+    hooks:
+    -   id: black
+        name: black
+        entry: black
+        language: python
+        types: [ file, python ]
+        language_version: python3.12
