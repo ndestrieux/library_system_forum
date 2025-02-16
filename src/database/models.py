@@ -29,4 +29,6 @@ class Topic(BaseModel):
     created_by: Mapped[str] = mapped_column(String(20))
     created_on: Mapped[datetime] = mapped_column(insert_default=datetime.today)
 
-    posts: Mapped[List["Post"]] = relationship("Post", back_populates="topic")
+    posts: Mapped[List["Post"]] = relationship(
+        "Post", back_populates="topic", cascade="all, delete-orphan"
+    )
