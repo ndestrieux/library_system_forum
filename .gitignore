@@ -220,6 +220,9 @@ ENV/
 env.bak/
 venv.bak/
 
+#SQLite
+*.sqlite*
+
 # Spyder project settings
 .spyderproject
 .spyproject
