@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "forum"
 version = "0.1.0"
+package-mode = false
 description = ""
 authors = ["ndestrieux <n.destrieux@gmail.com>"]
 readme = "README.md"
@@ -26,3 +27,8 @@ pytest-asyncio = "~0.24"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["tests"]
