@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "forum"
 version = "0.1.0"
+package-mode = false
 description = ""
 authors = ["ndestrieux <n.destrieux@gmail.com>"]
 readme = "README.md"
