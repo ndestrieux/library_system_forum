@@ -22,6 +22,9 @@ isort = "*"
 pre-commit = "~4.0"
 pytest = "~8.3"
 pytest-asyncio = "~0.24"
+pytest-env = "~1.1"
+faker = "~36.1"
+freezegun = "~1.5"
 
 
 [build-system]
@@ -29,6 +32,23 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 
+[tool.poetry.plugins.dotenv]
+ignore = "false"
+location = "./src/.env"
+
+
 [tool.pytest.ini_options]
 pythonpath = "src"
 testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-v -ra -q"
+minversion = "6.0"
+env = [
+    "which_db=sqlite",
+    "db_username=test_user",
+    "db_password=test_pass",
+    "db_name=test_forum.sqlite3",
+    "jwt_secret=test_secret",
+    "jwt_alg=HS256"
+]
