@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -34,7 +32,7 @@ async def topics(
     requester_data: RequesterData = Depends(jwt_token.decode),
     page_params: PageParams = Depends(),
     db: SessionLocal = Depends(get_db),
-) -> List[TopicSchema]:
+) -> PaginatedResponse[TopicSchema]:
     return paginate(page_params, TopicCRUD.get_many(db))
 
 
