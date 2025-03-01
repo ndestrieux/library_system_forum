@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from typing import Generator
+from itertools import count
+from typing import Dict, Iterator, List
 
 import pytest
 from faker import Faker
@@ -9,7 +10,7 @@ from database.models import Topic
 
 
 @pytest.fixture(scope="class")
-def topic_data_list():
+def topic_data_list(n: int = 20) -> List[Dict[str, str]]:
     fake = Faker()
     return [
         {
@@ -17,14 +18,14 @@ def topic_data_list():
             "category": fake.word(),
             "created_by": fake.first_name(),
         }
-        for _ in range(20)
+        for _ in range(n)
     ]
 
 
 @pytest.fixture(scope="class")
-def fake_dates() -> Generator[datetime]:
+def fake_dates() -> Iterator[datetime]:
     start_date = datetime(2020, 1, 1)
-    return (start_date + timedelta(days=i) for i in range(50))
+    return (start_date + timedelta(days=i) for i in count())
 
 
 @pytest.fixture(scope="class")

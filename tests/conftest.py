@@ -1,10 +1,11 @@
 from enum import StrEnum, auto
+from typing import Generator
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from database.models import BaseModel
@@ -14,7 +15,7 @@ from main import app
 from routers import jwt_token
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser) -> None:
     parser.addoption(
         "--dburl",
         action="store",
@@ -24,7 +25,7 @@ def pytest_addoption(parser):
 
 
 @pytest.hookimpl(tryfirst=True)
-def pytest_sessionstart(session):
+def pytest_sessionstart(session) -> None:
     db_url = session.config.getoption("--dburl")
     try:
         engine = create_engine(
@@ -42,13 +43,13 @@ def pytest_sessionstart(session):
 
 
 @pytest.fixture(scope="class")
-def db_url(request):
+def db_url(request) -> str:
     """Fixture to retrieve the database URL."""
     return request.config.getoption("--dburl")
 
 
 @pytest.fixture(scope="class")
-def db_session(db_url):
+def db_session(db_url) -> Generator[Session, None, None]:
     """Create a new database session with a rollback at the end of the test."""
     engine = create_engine(
         db_url,
@@ -66,10 +67,10 @@ def db_session(db_url):
 
 
 @pytest.fixture
-def async_test_client(db_session):
+def async_test_client(db_session) -> Generator[AsyncClient, None, None]:
     """Create a test client that uses the override_get_db fixture to return a session."""
 
-    def override_get_db():
+    def override_get_db() -> Generator[Session, None, None]:
         try:
             yield db_session
         finally:
@@ -79,11 +80,6 @@ def async_test_client(db_session):
     yield AsyncClient(
         transport=ASGITransport(app=app), base_url="http://localhost/api/forum"
     )
-
-
-@pytest.fixture(scope="session")
-def test_basic_user_name():
-    return "test_basic_user"
 
 
 class Users(StrEnum):
@@ -105,7 +101,7 @@ USER_GROUPS = {
 def override_jwt_token(request) -> None:
     user_name = request.param
 
-    def jwt_token_decode():
+    def jwt_token_decode() -> Generator[RequesterData, None, None]:
         yield RequesterData(name=user_name, groups=USER_GROUPS[user_name])
 
     app.dependency_overrides[jwt_token.decode] = jwt_token_decode
