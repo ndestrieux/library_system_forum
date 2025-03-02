@@ -2,6 +2,7 @@ from enum import StrEnum, auto
 from typing import Generator
 
 import pytest
+from faker import Faker
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
@@ -107,3 +108,8 @@ def override_jwt_token(request) -> None:
     app.dependency_overrides[jwt_token.decode] = jwt_token_decode
     yield
     del app.dependency_overrides[jwt_token.decode]
+
+
+@pytest.fixture(scope="session")
+def get_faker():
+    return Faker()

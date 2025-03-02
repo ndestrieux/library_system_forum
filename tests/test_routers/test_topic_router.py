@@ -86,17 +86,22 @@ class TestTopicDetails:
 
 class TestCreateTopic:
     @pytest.mark.parametrize(
-        "override_jwt_token, requesting_user",
+        "override_jwt_token, requesting_user, topic_data_list",
         [
-            [Users.TEST_BASIC_USER for _ in range(2)],
-            [Users.TEST_MODERATOR for _ in range(2)],
+            [Users.TEST_BASIC_USER for _ in range(2)] + [1],
+            [Users.TEST_MODERATOR for _ in range(2)] + [1],
         ],
-        indirect=["override_jwt_token"],
+        indirect=["override_jwt_token", "topic_data_list"],
     )
     async def test_create_topic_when_request_sent_by_any_user_type_should_return_created_object(
-        self, async_test_client, db_session, override_jwt_token, requesting_user
+        self,
+        async_test_client,
+        db_session,
+        override_jwt_token,
+        requesting_user,
+        topic_data_list,
     ):
-        data = {"title": "New topic", "category": "New category"}
+        data = topic_data_list[0]
         data_json = json.dumps(data)
         response = await async_test_client.post("/topics/", content=data_json)
         response_json = response.json()
@@ -127,10 +132,12 @@ class TestUpdateTopic:
         async_test_client,
         db_session,
         override_jwt_token,
+        get_faker,
         requesting_user,
         create_single_topic,
     ):
-        data_json = json.dumps({"title": "Another topic actually"})
+        fake = get_faker
+        data_json = json.dumps({"title": fake.sentence()})
         response = await async_test_client.patch(
             f"/topics/{create_single_topic.id}/", content=data_json
         )
@@ -150,12 +157,18 @@ class TestUpdateTopic:
         indirect=["override_jwt_token", "create_single_topic"],
     )
     async def test_update_topic_when_moderator_updates_object_created_by_any_user_type_should_return_200(
-        self, async_test_client, db_session, override_jwt_token, create_single_topic
+        self,
+        async_test_client,
+        db_session,
+        override_jwt_token,
+        get_faker,
+        create_single_topic,
     ):
-        new_title = "Moderator changed topic title"
-        data_json = json.dumps({"title": new_title})
+        fake = get_faker
+        new_title = fake.sentence()
+        data = json.dumps({"title": new_title})
         response = await async_test_client.patch(
-            f"/topics/{create_single_topic.id}/", content=data_json
+            f"/topics/{create_single_topic.id}/", content=data
         )
         response_json = response.json()
         assert response.status_code == 200
@@ -165,9 +178,10 @@ class TestUpdateTopic:
         "create_single_topic", [Users.TEST_BASIC_USER], indirect=["create_single_topic"]
     )
     async def test_update_topic_when_request_sent_with_no_bearer_should_return_422(
-        self, async_test_client, db_session, create_single_topic
+        self, async_test_client, db_session, get_faker, create_single_topic
     ):
-        data = json.dumps({"title": "Another topic actually"})
+        fake = get_faker
+        data = json.dumps({"title": fake.sentence()})
         response = await async_test_client.patch(
             f"/topics/{create_single_topic.id}/", content=data
         )
