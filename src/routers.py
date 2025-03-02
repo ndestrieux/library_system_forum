@@ -33,7 +33,7 @@ async def topics(
     page_params: PageParams = Depends(),
     db: SessionLocal = Depends(get_db),
 ) -> PaginatedResponse[TopicSchema]:
-    return paginate(page_params, TopicCRUD.get_many(db))
+    return paginate(page_params, TopicCRUD.get_many(db, order_by="created_on desc"))
 
 
 @router.get("/topics/{topic_id}/")
@@ -93,7 +93,10 @@ async def topic_posts(
     page_params: PageParams = Depends(),
     db: SessionLocal = Depends(get_db),
 ) -> PaginatedResponse[PostSchema]:
-    return paginate(page_params, PostCRUD.get_many(db, topic_id, "topic_id"))
+    return paginate(
+        page_params,
+        PostCRUD.get_many(db, topic_id, "topic_id", order_by="posted_on desc"),
+    )
 
 
 @router.post("/topics/{topic_id}/posts/")

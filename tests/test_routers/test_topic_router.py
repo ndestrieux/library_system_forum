@@ -49,6 +49,19 @@ class TestTopicList:
         assert response_json["page"] == page_nb
         assert response_json["size"] == len(response_json["data"]) == page_size
 
+    @pytest.mark.parametrize(
+        "override_jwt_token", [Users.TEST_BASIC_USER], indirect=True
+    )
+    async def test_topic_list_should_return_topics_ordered_by_created_on_date_descending(
+        self, bulk_create_topics, async_test_client, db_session, override_jwt_token
+    ):
+        response = await async_test_client.get("/topics/")
+        response_json = response.json()
+        assert (
+            response_json["data"][0]["created_on"]
+            > response_json["data"][-1]["created_on"]
+        )
+
 
 class TestTopicDetails:
     @pytest.mark.parametrize(
