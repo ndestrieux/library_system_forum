@@ -33,6 +33,7 @@ class PostCreateValidatedData(ValidatedData):
 
     content: str
     author: str
+    topic_id: int
 
 
 class PostUpdateValidatedData(ValidatedData):

@@ -116,7 +116,7 @@ async def topic_post_create(
     return PostCRUD.create(db, validated_data)
 
 
-@router.patch("/posts/{post_id}")
+@router.patch("/posts/{post_id}/")
 async def topic_post_update(
     post_id: int,
     post_data: PostData,
@@ -129,11 +129,11 @@ async def topic_post_update(
         or set(requester_data.groups) & {"moderator"}
     ):
         raise NoPermissionException(requester_data.name)
-    validated_data = PostUpdateValidatedData(post_data.model_dump(exclude_none=True))
+    validated_data = PostUpdateValidatedData(**post_data.model_dump(exclude_none=True))
     return PostCRUD.update(db, post_obj, validated_data)
 
 
-@router.delete("/posts/{post_id}")
+@router.delete("/posts/{post_id}/")
 async def topic_post_delete(
     post_id: int,
     requester_data: RequesterData = Depends(jwt_token.decode),
