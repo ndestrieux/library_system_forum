@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel as ValidatedData
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.query import RowReturningQuery
+from sqlalchemy.sql import text
 
 from database.models import BaseModel, Post, Topic
 
@@ -35,7 +36,11 @@ class BaseCRUD(ABC):
 
     @classmethod
     def get_many(
-        cls, db: Session, id_: Optional[int | str] = None, column: Optional[str] = None
+        cls,
+        db: Session,
+        id_: Optional[int | str] = None,
+        column: Optional[str] = None,
+        order_by: str = "id desc",
     ) -> RowReturningQuery[tuple[BaseModel]]:
         """
         Retrieve multiple records based on optional filter criteria.
@@ -44,13 +49,16 @@ class BaseCRUD(ABC):
             db (Session): The database session.
             id_ (Optional[int | str]): The ID or string value to filter by.
             column (Optional[str]): The column name to apply the filter on.
+            order_by (str): The column on which the query should be ordered.
+            The query will be ordered by descending id column by default.
 
         Returns:
             ScalarResult[BaseModel]: The result set of records.
         """
-        q = db.query(cls.MODEL)
+        q = db.query(cls.MODEL).order_by(text(order_by))
+        print(q, flush=True)
         if id_ and column:
-            q.where(getattr(cls.MODEL, column) == id_)
+            q = q.where(getattr(cls.MODEL, column) == id_)
         return q
 
     @classmethod
