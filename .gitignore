@@ -264,4 +264,8 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
+# Helm secrets
+*.yaml.dec
+*.yml.dec
+
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm+all

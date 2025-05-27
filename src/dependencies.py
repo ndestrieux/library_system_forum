@@ -34,8 +34,8 @@ class JWTToken:
     """
 
     def __init__(self):
-        self._secret = get_settings().jwt_secret
-        self._algorithm = get_settings().jwt_alg
+        self._secret = get_settings().JWT_SECRET
+        self._algorithm = get_settings().JWT_ALG
 
     def decode(self, token: Annotated[Token, Header()]) -> RequesterData:
         """
